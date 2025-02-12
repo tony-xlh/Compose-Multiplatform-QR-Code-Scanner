@@ -1,0 +1,23 @@
+PODS:
+  - composeApp (1.0):
+    - DynamsoftBarcodeReader (= 9.6.40)
+  - DynamsoftBarcodeReader (9.6.40)
+
+DEPENDENCIES:
+  - composeApp (from `../composeApp/composeApp.podspec`)
+
+SPEC REPOS:
+  trunk:
+    - DynamsoftBarcodeReader
+
+EXTERNAL SOURCES:
+  composeApp:
+    :path: "../composeApp/composeApp.podspec"
+
+SPEC CHECKSUMS:
+  composeApp: 5562c5567947fa2ca14996b7750dc8d7f4fbdf1d
+  DynamsoftBarcodeReader: 42d9ff4c9e1314ab1c600877e7f8c37ac2525bd8
+
+PODFILE CHECKSUM: 5c475d61f062f66f38694cc01ac7c26910b2cfc3
+
+COCOAPODS: 1.16.2

@@ -7,6 +7,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.viewinterop.UIKitInteropProperties
 import androidx.compose.ui.viewinterop.UIKitView
+import dynamsoft.DSBarcodeResultItem
 import dynamsoft.DSCaptureVisionRouter
 import dynamsoft.DSLicenseManager
 import dynamsoft.DSLicenseVerificationListenerProtocol
@@ -193,7 +194,7 @@ class ScannerCameraCoordinator(
     }
 
     fun stop() {
-        if (::captureSession.isInitialized && captureSession.isRunning) {
+        if (::captureSession.isInitialized && captureSession.isRunning()) {
             GlobalScope.launch(Dispatchers.Default) {
                 captureSession.stopRunning()
             }
@@ -241,7 +242,7 @@ class ScannerCameraCoordinator(
             println("Decode failed: ${capturedResult.errorMessage}")
             return
         }
-        val text = capturedResult.decodedBarcodesResult?.items?.firstOrNull()?.text
+        val text = (capturedResult.decodedBarcodesResult?.items?.firstOrNull() as? DSBarcodeResultItem)?.text
         if (text != null) {
             // Report results on the main thread because they update Compose state.
             dispatch_async(dispatch_get_main_queue()) {

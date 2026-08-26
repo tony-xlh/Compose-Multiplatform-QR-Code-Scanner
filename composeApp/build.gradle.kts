@@ -1,7 +1,6 @@
 import org.jetbrains.compose.desktop.application.dsl.TargetFormat
 import org.jetbrains.kotlin.gradle.ExperimentalKotlinGradlePluginApi
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
-import org.jetbrains.kotlin.gradle.plugin.mpp.apple.XCFramework
 import org.jetbrains.kotlin.gradle.plugin.mpp.NativeBuildType
 
 plugins {
@@ -39,9 +38,16 @@ kotlin {
         xcodeConfigurationToNativeBuildType["CUSTOM_RELEASE"] = NativeBuildType.RELEASE
     }
 
-    // Dynamsoft Barcode Reader v11 ships its iOS SDK as XCFrameworks (no v11 CocoaPods pod exists).
-    // The SDK is vendored under iosApp/SDK and consumed through Kotlin/Native cinterop.
-    val dynamsoftSdkDir = rootProject.projectDir.resolve("iosApp/SDK")
+    // Dynamsoft Barcode Reader v11 is installed via CocoaPods (see the Podfile) and its
+    // XCFrameworks are consumed through Kotlin/Native cinterop.
+    // DynamsoftBarcodeReaderBundle.h re-exports the Capture Vision Bundle headers,
+    // so both frameworks must be on the compiler/linker search paths.
+    val dynamsoftPodRoot = rootProject.projectDir.resolve(
+        "iosApp/Pods/DynamsoftBarcodeReaderBundle/DynamsoftBarcodeReaderBundle.xcframework"
+    )
+    val dynamsoftCaptureVisionPodRoot = rootProject.projectDir.resolve(
+        "iosApp/Pods/DynamsoftCaptureVisionBundle/DynamsoftCaptureVisionBundle.xcframework"
+    )
 
     listOf(
         iosX64(),
@@ -58,18 +64,31 @@ kotlin {
             "iosArm64" -> "ios-arm64"
             else -> "ios-arm64_x86_64-simulator"
         }
-        val frameworkDir = dynamsoftSdkDir.resolve("DynamsoftCaptureVisionBundle.xcframework/$xcframeworkSlice")
+        val frameworkDir = dynamsoftPodRoot.resolve(xcframeworkSlice)
+        val captureVisionDir = dynamsoftCaptureVisionPodRoot.resolve(xcframeworkSlice)
 
         iosTarget.compilations.getByName("main") {
             cinterops {
-                val dynamsoftCaptureVision by creating {
-                    defFile(dynamsoftSdkDir.resolve("DynamsoftCaptureVisionBundle.def"))
-                    compilerOpts("-framework", "DynamsoftCaptureVisionBundle", "-F", frameworkDir.absolutePath)
+                val dynamsoftBarcodeReader by creating {
+                    defFile(rootProject.projectDir.resolve("iosApp/SDK/DynamsoftBarcodeReaderBundle.def"))
+                    // The Dynamsoft framework headers use clang modules (@import), so -fmodules is required.
+                    compilerOpts(
+                        "-fmodules",
+                        "-framework", "DynamsoftBarcodeReaderBundle",
+                        "-framework", "DynamsoftCaptureVisionBundle",
+                        "-F", frameworkDir.absolutePath,
+                        "-F", captureVisionDir.absolutePath
+                    )
                 }
             }
         }
         iosTarget.binaries.all {
-            linkerOpts("-framework", "DynamsoftCaptureVisionBundle", "-F", frameworkDir.absolutePath)
+            linkerOpts(
+                "-framework", "DynamsoftBarcodeReaderBundle",
+                "-framework", "DynamsoftCaptureVisionBundle",
+                "-F", frameworkDir.absolutePath,
+                "-F", captureVisionDir.absolutePath
+            )
         }
     }
     

@@ -1,16 +1,28 @@
 PODS:
-  - composeApp (1.0)
+  - composeApp (1.0):
+    - DynamsoftBarcodeReaderBundle (= 11.6.2000)
+  - DynamsoftBarcodeReaderBundle (11.6.2000):
+    - DynamsoftCaptureVisionBundle (= 3.6.2000)
+  - DynamsoftCaptureVisionBundle (3.6.2000)
 
 DEPENDENCIES:
   - composeApp (from `../composeApp/composeApp.podspec`)
+  - DynamsoftBarcodeReaderBundle (= 11.6.2000)
+
+SPEC REPOS:
+  trunk:
+    - DynamsoftBarcodeReaderBundle
+    - DynamsoftCaptureVisionBundle
 
 EXTERNAL SOURCES:
   composeApp:
     :path: "../composeApp/composeApp.podspec"
 
 SPEC CHECKSUMS:
-  composeApp: 5562c5567947fa2ca14996b7750dc8d7f4fbdf1d
+  composeApp: 7a10b1309880090c634e17e628b6f213b74bfab8
+  DynamsoftBarcodeReaderBundle: 30579a93f0fd98be0ac4a2acbfdd8ddfd2799592
+  DynamsoftCaptureVisionBundle: 786952063fff6881847ed1644069cdc57e5cd815
 
-PODFILE CHECKSUM: 5c475d61f062f66f38694cc01ac7c26910b2cfc3
+PODFILE CHECKSUM: 0f47773fe2744752fd0abd3f4670a2e7421672ae
 
 COCOAPODS: 1.16.2

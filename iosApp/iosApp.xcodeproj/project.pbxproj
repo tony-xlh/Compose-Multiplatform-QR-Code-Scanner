@@ -11,9 +11,9 @@
 		058557D9273AAEEB004C7B11 /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 058557D8273AAEEB004C7B11 /* Preview Assets.xcassets */; };
 		2152FB042600AC8F00CF470E /* iOSApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2152FB032600AC8F00CF470E /* iOSApp.swift */; };
 		7555FF83242A565900829871 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7555FF82242A565900829871 /* ContentView.swift */; };
-		E999382B1B1EEC1197026306 /* Pods_iosApp.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F58E1CEE650B0728DC7D65C3 /* Pods_iosApp.framework */; };
 		DB11CE6000000000000000F2 /* DynamsoftCaptureVisionBundle.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = DB11CE6000000000000000F1 /* DynamsoftCaptureVisionBundle.xcframework */; };
 		DB11CE6000000000000000F3 /* DynamsoftCaptureVisionBundle.xcframework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = DB11CE6000000000000000F1 /* DynamsoftCaptureVisionBundle.xcframework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		E999382B1B1EEC1197026306 /* Pods_iosApp.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F58E1CEE650B0728DC7D65C3 /* Pods_iosApp.framework */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -39,8 +39,8 @@
 		7555FF7B242A565900829871 /* QRCodeScanner.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = QRCodeScanner.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		7555FF82242A565900829871 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
 		7555FF8C242A565B00829871 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		DB11CE6000000000000000F1 /* DynamsoftCaptureVisionBundle.xcframework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcframework; name = DynamsoftCaptureVisionBundle.xcframework; path = SDK/DynamsoftCaptureVisionBundle.xcframework; sourceTree = "<group>"; };
 		AB3632DC29227652001CCB65 /* Config.xcconfig */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xcconfig; path = Config.xcconfig; sourceTree = "<group>"; };
+		DB11CE6000000000000000F1 /* DynamsoftCaptureVisionBundle.xcframework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcframework; name = DynamsoftCaptureVisionBundle.xcframework; path = SDK/DynamsoftCaptureVisionBundle.xcframework; sourceTree = "<group>"; };
 		F58E1CEE650B0728DC7D65C3 /* Pods_iosApp.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_iosApp.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
@@ -71,7 +71,6 @@
 				08AB865DB03031728A8910FF /* Pods-iosApp.debug.xcconfig */,
 				36311DFB203D5D61281CCC70 /* Pods-iosApp.release.xcconfig */,
 			);
-			name = Pods;
 			path = Pods;
 			sourceTree = "<group>";
 		};
@@ -225,9 +224,13 @@
 			inputFileListPaths = (
 				"${PODS_ROOT}/Target Support Files/Pods-iosApp/Pods-iosApp-frameworks-${CONFIGURATION}-input-files.xcfilelist",
 			);
+			inputPaths = (
+			);
 			name = "[CP] Embed Pods Frameworks";
 			outputFileListPaths = (
 				"${PODS_ROOT}/Target Support Files/Pods-iosApp/Pods-iosApp-frameworks-${CONFIGURATION}-output-files.xcfilelist",
+			);
+			outputPaths = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
@@ -242,9 +245,13 @@
 			inputFileListPaths = (
 				"${PODS_ROOT}/Target Support Files/Pods-iosApp/Pods-iosApp-resources-${CONFIGURATION}-input-files.xcfilelist",
 			);
+			inputPaths = (
+			);
 			name = "[CP] Copy Pods Resources";
 			outputFileListPaths = (
 				"${PODS_ROOT}/Target Support Files/Pods-iosApp/Pods-iosApp-resources-${CONFIGURATION}-output-files.xcfilelist",
+			);
+			outputPaths = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
@@ -412,7 +419,7 @@
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_ASSET_PATHS = "\"iosApp/Preview Content\"";
-				DEVELOPMENT_TEAM = XQ6X448L48;
+				DEVELOPMENT_TEAM = E5D9GMM365;
 				ENABLE_PREVIEWS = YES;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
@@ -441,7 +448,7 @@
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_ASSET_PATHS = "\"iosApp/Preview Content\"";
-				DEVELOPMENT_TEAM = XQ6X448L48;
+				DEVELOPMENT_TEAM = E5D9GMM365;
 				ENABLE_PREVIEWS = YES;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",

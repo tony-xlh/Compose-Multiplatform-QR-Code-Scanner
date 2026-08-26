@@ -13,6 +13,11 @@
   "platforms": {
     "ios": "15.0"
   },
+  "dependencies": {
+    "DynamsoftBarcodeReaderBundle": [
+      "11.6.2000"
+    ]
+  },
   "xcconfig": {
     "ENABLE_USER_SCRIPT_SANDBOXING": "NO"
   },

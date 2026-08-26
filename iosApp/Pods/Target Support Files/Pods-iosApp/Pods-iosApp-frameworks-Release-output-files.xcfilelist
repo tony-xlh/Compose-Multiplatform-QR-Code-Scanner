@@ -1,0 +1,2 @@
+${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/DynamsoftBarcodeReaderBundle.framework
+${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/DynamsoftCaptureVisionBundle.framework

@@ -9,6 +9,7 @@ Pod::Spec.new do |spec|
     spec.vendored_frameworks      = 'build/cocoapods/framework/ComposeApp.framework'
     spec.libraries                = 'c++'
     spec.ios.deployment_target    = '15.0'
+    spec.dependency 'DynamsoftBarcodeReaderBundle', '11.6.2000'
                 
     if !Dir.exist?('build/cocoapods/framework/ComposeApp.framework') || Dir.empty?('build/cocoapods/framework/ComposeApp.framework')
         raise "

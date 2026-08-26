@@ -35,13 +35,14 @@ kotlin {
             isStatic = true
         }
 
-        pod("DynamsoftBarcodeReader") {
-            version = "9.6.40"
-        }
-
         xcodeConfigurationToNativeBuildType["CUSTOM_DEBUG"] = NativeBuildType.DEBUG
         xcodeConfigurationToNativeBuildType["CUSTOM_RELEASE"] = NativeBuildType.RELEASE
     }
+
+    // Dynamsoft Barcode Reader v11 ships its iOS SDK as XCFrameworks (no v11 CocoaPods pod exists).
+    // The SDK is vendored under iosApp/SDK and consumed through Kotlin/Native cinterop.
+    val dynamsoftSdkDir = rootProject.projectDir.resolve("iosApp/SDK")
+
     listOf(
         iosX64(),
         iosArm64(),
@@ -50,6 +51,25 @@ kotlin {
         iosTarget.binaries.framework {
             baseName = "ComposeApp"
             isStatic = true
+        }
+
+        // Pick the XCFramework slice matching this target.
+        val xcframeworkSlice = when (iosTarget.name) {
+            "iosArm64" -> "ios-arm64"
+            else -> "ios-arm64_x86_64-simulator"
+        }
+        val frameworkDir = dynamsoftSdkDir.resolve("DynamsoftCaptureVisionBundle.xcframework/$xcframeworkSlice")
+
+        iosTarget.compilations.getByName("main") {
+            cinterops {
+                val dynamsoftCaptureVision by creating {
+                    defFile(dynamsoftSdkDir.resolve("DynamsoftCaptureVisionBundle.def"))
+                    compilerOpts("-framework", "DynamsoftCaptureVisionBundle", "-F", frameworkDir.absolutePath)
+                }
+            }
+        }
+        iosTarget.binaries.all {
+            linkerOpts("-framework", "DynamsoftCaptureVisionBundle", "-F", frameworkDir.absolutePath)
         }
     }
     

@@ -2,6 +2,7 @@ package org.example.project
 
 import android.annotation.SuppressLint
 import android.content.Context
+import android.util.Log
 import androidx.camera.core.ImageAnalysis
 import androidx.camera.core.ImageProxy
 import com.dynamsoft.core.basic_structures.EnumImagePixelFormat
@@ -15,11 +16,12 @@ class BarcodeAnalyzer(
     private val context: Context,
 ) : ImageAnalysis.Analyzer {
 
+    // CaptureVisionRouter is the entry point of the Dynamsoft Capture Vision core API.
+    // It hosts the barcode engine of Dynamsoft Barcode Reader.
     private val router = CaptureVisionRouter(context)
 
     @SuppressLint("UnsafeOptInUsageError")
     override fun analyze(imageProxy: ImageProxy) {
-        println("analyse")
         imageProxy.image?.let { image ->
             val buffer = image.planes[0].buffer
             val nRowStride = image.planes[0].rowStride
@@ -33,11 +35,13 @@ class BarcodeAnalyzer(
             imageData.height = image.height
             imageData.stride = nRowStride * nPixelStride
             imageData.format = EnumImagePixelFormat.IPF_NV21
-            val capturedResult = router.capture(imageData,EnumPresetTemplate.PT_READ_SINGLE_BARCODE)
-            if (capturedResult.decodedBarcodesResult != null) {
-                if (capturedResult.decodedBarcodesResult!!.items.isNotEmpty()) {
-                    val result = capturedResult.decodedBarcodesResult!!.items[0]
-                    onScanned(result.text)
+            // Read barcodes with the built-in "ReadBarcodes" preset template.
+            val capturedResult = router.capture(imageData, EnumPresetTemplate.PT_READ_BARCODES)
+            if (capturedResult.errorCode != 0) {
+                Log.e("DBR", capturedResult.errorMessage)
+            } else {
+                capturedResult.decodedBarcodesResult?.items?.firstOrNull()?.let {
+                    onScanned(it.text)
                 }
             }
         }

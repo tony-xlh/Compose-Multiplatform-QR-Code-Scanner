@@ -13,10 +13,10 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         if (savedInstanceState == null) {
-            println("init license print")
-            Log.d("DBR","init license")
-            LicenseManager.initLicense("DLS2eyJvcmdhbml6YXRpb25JRCI6IjIwMDAwMSJ9", this) { isSuccess: Boolean, error: Exception? ->
-                Log.d("DBR",isSuccess.toString())
+            // Public trial license. A network connection is required for the first online verification.
+            // Request a longer trial key at https://www.dynamsoft.com/customer/license/trialLicense/?product=dbr
+            LicenseManager.initLicense("DLS2eyJoYW5kc2hha2VDb2RlIjoiMjAwMDAxLTE2NDk4Mjk3OTI2MzUiLCJvcmdhbml6YXRpb25JRCI6IjIwMDAwMSIsInNlc3Npb25QYXNzd29yZCI6IndTcGR6Vm05WDJrcEQ5YUoifQ==") { isSuccess: Boolean, error: Exception? ->
+                Log.d("DBR", isSuccess.toString())
                 if (!isSuccess) {
                     error?.printStackTrace()
                 }

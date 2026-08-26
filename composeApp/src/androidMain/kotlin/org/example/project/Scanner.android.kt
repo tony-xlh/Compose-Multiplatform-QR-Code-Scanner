@@ -4,8 +4,13 @@ import android.content.Context
 import android.content.Intent
 import android.net.Uri
 import android.provider.Settings
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.core.content.ContextCompat
@@ -20,10 +25,18 @@ actual fun Scanner(
     onScanned: (String) -> Unit,
 ) {
     val context = LocalContext.current
+    var annotations by remember { mutableStateOf(emptyList<BarcodeAnnotation>()) }
     val analyzer = remember() {
-        BarcodeAnalyzer(onScanned, context)
+        BarcodeAnalyzer(
+            onScanned = onScanned,
+            onBarcodesUpdated = { annotations = it },
+            context = context,
+        )
     }
-    CameraView(modifier,analyzer)
+    Box(modifier) {
+        CameraView(Modifier.fillMaxSize(), analyzer)
+        BarcodeOverlay(annotations, Modifier.fillMaxSize())
+    }
 }
 
 @OptIn(ExperimentalPermissionsApi::class)

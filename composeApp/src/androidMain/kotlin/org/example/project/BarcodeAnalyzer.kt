@@ -12,19 +12,6 @@ import com.dynamsoft.cvr.CaptureVisionRouter
 import com.dynamsoft.cvr.EnumPresetTemplate
 import com.dynamsoft.dbr.BarcodeResultItem
 
-/**
- * A decoded barcode together with its bounding quadrilateral.
- * The corners are normalized to 0..1 in the rotated (display) coordinate space,
- * so they can be mapped directly onto the camera preview. [aspectRatio] is the
- * width/height ratio of the rotated camera frame and is required to undo the
- * normalization when drawing on the preview.
- */
-data class BarcodeAnnotation(
-    val text: String,
-    val corners: List<Offset>,
-    val aspectRatio: Float,
-)
-
 class BarcodeAnalyzer(
     private val onScanned: (String) -> Unit,
     private val onBarcodesUpdated: (List<BarcodeAnnotation>) -> Unit,

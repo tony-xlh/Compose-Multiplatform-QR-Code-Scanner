@@ -1,10 +1,15 @@
 package org.example.project
 
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.viewinterop.UIKitInteropProperties
 import androidx.compose.ui.viewinterop.UIKitView
 import dynamsoft.DSBarcodeResultItem
@@ -19,6 +24,7 @@ import kotlinx.cinterop.alloc
 import kotlinx.cinterop.cValue
 import kotlinx.cinterop.memScoped
 import kotlinx.cinterop.ptr
+import kotlinx.cinterop.useContents
 import kotlinx.cinterop.value
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
@@ -47,7 +53,9 @@ import platform.CoreMedia.CMSampleBufferRef
 import platform.CoreVideo.CVImageBufferRef
 import platform.Foundation.NSDate
 import platform.Foundation.NSError
+import platform.Foundation.NSValue
 import platform.Foundation.timeIntervalSince1970
+import platform.UIKit.CGPointValue
 import platform.QuartzCore.CALayer
 import platform.QuartzCore.CATransaction
 import platform.QuartzCore.kCATransactionDisableActions
@@ -66,9 +74,11 @@ fun UiScannerView(
     modifier: Modifier = Modifier,
     onScanned: (String) -> Unit
 ) {
+    var annotations by remember { mutableStateOf(emptyList<BarcodeAnnotation>()) }
     val coordinator = remember {
         ScannerCameraCoordinator(
-            onScanned = onScanned
+            onScanned = onScanned,
+            onBarcodesUpdated = { annotations = it }
         )
     }
 
@@ -85,18 +95,22 @@ fun UiScannerView(
         }
     }
 
-    UIKitView<UIView>(
-        modifier = modifier.fillMaxSize(),
-        factory = {
-            val previewContainer = ScannerPreviewView(coordinator)
-            coordinator.prepare(previewContainer.layer)
-            previewContainer
-        },
-        properties = UIKitInteropProperties(
-            isInteractive = true,
-            isNativeAccessibilityEnabled = true,
+    Box(modifier = modifier.fillMaxSize()) {
+        UIKitView<UIView>(
+            modifier = Modifier.fillMaxSize(),
+            factory = {
+                val previewContainer = ScannerPreviewView(coordinator)
+                coordinator.prepare(previewContainer.layer)
+                previewContainer
+            },
+            properties = UIKitInteropProperties(
+                isInteractive = true,
+                isNativeAccessibilityEnabled = true,
+            )
         )
-    )
+        // Shared overlay on top of the AVFoundation preview layer.
+        BarcodeOverlay(annotations, Modifier.fillMaxSize())
+    }
 }
 
 @OptIn(ExperimentalForeignApi::class)
@@ -115,7 +129,8 @@ class ScannerPreviewView(private val coordinator: ScannerCameraCoordinator): UIV
 
 @OptIn(ExperimentalForeignApi::class)
 class ScannerCameraCoordinator(
-    val onScanned: (String) -> Unit
+    val onScanned: (String) -> Unit,
+    val onBarcodesUpdated: (List<BarcodeAnnotation>) -> Unit
 ): AVCaptureVideoDataOutputSampleBufferDelegateProtocol, DSLicenseVerificationListenerProtocol, NSObject() {
 
     private var previewLayer: AVCaptureVideoPreviewLayer? = null
@@ -242,11 +257,44 @@ class ScannerCameraCoordinator(
             println("Decode failed: ${capturedResult.errorMessage}")
             return
         }
-        val text = (capturedResult.decodedBarcodesResult?.items?.firstOrNull() as? DSBarcodeResultItem)?.text
-        if (text != null) {
-            // Report results on the main thread because they update Compose state.
+        val items = capturedResult.decodedBarcodesResult?.items.orEmpty()
+
+        // Report the first decoded text on the main thread because it updates Compose state.
+        items.firstOrNull()?.let { item ->
+            val text = (item as? DSBarcodeResultItem)?.text
+            if (text != null) {
+                dispatch_async(dispatch_get_main_queue()) {
+                    onScanned(text)
+                }
+            }
+        }
+
+        // Build the bounding-box annotations for the shared overlay. The points
+        // from Dynamsoft are in the source image's pixel space (portrait, because
+        // the video output is configured to portrait), so normalize them to 0..1.
+        val size = image.size
+        val (widthPx, heightPx) = size.useContents { width to height }
+        if (widthPx > 0.0 && heightPx > 0.0) {
+            val annotations = items.mapNotNull { item ->
+                val barcodeItem = item as? DSBarcodeResultItem ?: return@mapNotNull null
+                val points = barcodeItem.location?.points ?: return@mapNotNull null
+                val corners = points.mapNotNull { value ->
+                    val nsValue = value as? NSValue ?: return@mapNotNull null
+                    val point = nsValue.CGPointValue().useContents { x to y }
+                    Offset(
+                        (point.first / widthPx).toFloat(),
+                        (point.second / heightPx).toFloat()
+                    )
+                }
+                if (corners.size < 3) return@mapNotNull null
+                BarcodeAnnotation(
+                    text = barcodeItem.text,
+                    corners = corners,
+                    aspectRatio = (widthPx / heightPx).toFloat()
+                )
+            }
             dispatch_async(dispatch_get_main_queue()) {
-                onScanned(text)
+                onBarcodesUpdated(annotations)
             }
         }
     }
